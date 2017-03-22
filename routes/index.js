@@ -1,98 +1,38 @@
-var utils    = require( '../utils' );
+var express = require('express');
 var mongoose = require( 'mongoose' );
 var Todo     = mongoose.model( 'Todo' );
+var router = express.Router();
 
-exports.index = function ( req, res, next ){
-  var user_id = req.cookies ?
-    req.cookies.user_id : undefined;
-
-  Todo.
-    find({ user_id : user_id }).
-    sort( '-updated_at' ).
-    exec( function ( err, todos ){
-      if( err ) return next( err );
-
-      res.render( 'index', {
-          title : 'Express Todo Example',
-          todos : todos
-      });
+router.get('/',function ( req, res, next ){
+	console.log("in");
+  var user_id ="test"
+  Todo.find({ user_id : user_id }).sort('-updated_at').exec( function ( err, todos ){
+	  console.log("error");
+      if( err ) console.log(err);
+      console.log(todos);
+      res.render('index.ejs',{title : 'Express Todo Example',todos : todos});
     });
-};
+});
 
-exports.create = function ( req, res, next ){
+router.post( '/create',function ( req, res, next ){
   new Todo({
-      user_id    : req.cookies.user_id,
+	  user_id    : "test",
       content    : req.body.content,
       updated_at : Date.now()
   }).save( function ( err, todo, count ){
     if( err ) return next( err );
-
     res.redirect( '/' );
   });
-};
+});
 
-exports.destroy = function ( req, res, next ){
+router.get(  '/destroy/:id',function ( req, res, next ){
   Todo.findById( req.params.id, function ( err, todo ){
-    var user_id = req.cookies ?
-      req.cookies.user_id : undefined;
-
-    if( todo.user_id !== user_id ){
-      return utils.forbidden( res );
-    }
-
+    var user_id = "test";
     todo.remove( function ( err, todo ){
       if( err ) return next( err );
-
       res.redirect( '/' );
     });
   });
-};
+});
 
-exports.edit = function( req, res, next ){
-  var user_id = req.cookies ?
-      req.cookies.user_id : undefined;
-
-  Todo.
-    find({ user_id : user_id }).
-    sort( '-updated_at' ).
-    exec( function ( err, todos ){
-      if( err ) return next( err );
-
-      res.render( 'edit', {
-        title   : 'Express Todo Example',
-        todos   : todos,
-        current : req.params.id
-      });
-    });
-};
-
-exports.update = function( req, res, next ){
-  Todo.findById( req.params.id, function ( err, todo ){
-    var user_id = req.cookies ?
-      req.cookies.user_id : undefined;
-
-    if( todo.user_id !== user_id ){
-      return utils.forbidden( res );
-    }
-
-    todo.content    = req.body.content;
-    todo.updated_at = Date.now();
-    todo.save( function ( err, todo, count ){
-      if( err ) return next( err );
-
-      res.redirect( '/' );
-    });
-  });
-};
-
-// ** express turns the cookie key to lowercase **
-exports.current_user = function ( req, res, next ){
-  var user_id = req.cookies ?
-      req.cookies.user_id : undefined;
-
-  if( !user_id ){
-    res.cookie( 'user_id', utils.uid( 32 ));
-  }
-
-  next();
-};
+module.exports = router;

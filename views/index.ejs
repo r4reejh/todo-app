@@ -1,18 +1,39 @@
-<% layout( 'layout' ) -%>
-
-<h1 id="page-title"><%= title %></h1>
-
-<div id="list">
-  <form action="/create" method="post" accept-charset="utf-8">
-    <div class="item-new">
-      <input class="input" type="text" name="content" />
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/screen.css' />
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="layout">
+		<h1 id="page-title"><%= title %></h1>
+		<div id="list">
+		<form action="/create" method="post" accept-charset="utf-8">
+			<div class="item-new">
+			<input class="input" type="text" name="content" />
+			</div>
+		</form>
+		<% todos.forEach( function ( todo ){ %>
+			<div class="item">
+			<%= todo.content %>
+			<a class="del-btn" href="/destroy/<%= todo.id %>" title="Delete this todo item">Delete</a>
+			</div>
+		<% }); %>
+	</div>
+      <div id="layout-footer"></div>
     </div>
-  </form>
+    <div id="footer-wrap">
+      <div id="footer">
+      </div>
+    </div>
+    <script src="/javascripts/ga.js"></script>
+  </body>
+</html>
 
-<% todos.forEach( function ( todo ){ %>
-  <div class="item">
-    <a class="update-link" href="/edit/<%= todo._id %>" title="Update this todo item"><%= todo.content %></a>
-    <a class="del-btn" href="/destroy/<%= todo._id %>" title="Delete this todo item">Delete</a>
-  </div>
-<% }); %>
-</div>
+
+
+
+
